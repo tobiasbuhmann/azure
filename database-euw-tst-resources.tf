@@ -5,7 +5,6 @@ data azurerm_subscription "subscription" {
 
 # RG Network
 resource "azurerm_resource_group" "resourceGroupNetwork" {
-  provider = azurerm.subscription
   tags     = var.tagsNetwork
   name     = "rg-${var.subscriptionName}-network-${var.region}-${var.environment}"
   location = var.location
@@ -13,7 +12,6 @@ resource "azurerm_resource_group" "resourceGroupNetwork" {
 
 # Network Watcher
 resource "azurerm_network_watcher" "networkWatcher" {
-  provider            = azurerm.subscription
   tags                = var.tagsNetwork
   name                = "nw-${var.subscriptionName}-${var.region}-${var.environment}"
   location            = var.location
@@ -22,7 +20,6 @@ resource "azurerm_network_watcher" "networkWatcher" {
 
 # Network Security Group
 resource "azurerm_network_security_group" "networkSecurityGroup" {
-  provider            = azurerm.subscription
   tags                = var.tagsNetwork
   name                = "nsg-${var.subscriptionName}-${var.region}-${var.environment}"
   location            = var.location
@@ -31,7 +28,6 @@ resource "azurerm_network_security_group" "networkSecurityGroup" {
 
 # Route Table
 resource "azurerm_route_table" "routeTable" {
-  provider                      = azurerm.subscription
   tags                          = var.tagsNetwork
   name                          = "rt-${var.subscriptionName}-${var.region}-${var.environment}"
   location                      = var.location
@@ -55,7 +51,6 @@ resource "azurerm_route_table" "routeTable" {
 
 # Virtual Network
 resource "azurerm_virtual_network" "virtualNetwork" {
-  provider            = azurerm.subscription
   tags                = var.tagsNetwork
   name                = "vnet-${var.subscriptionName}-${var.region}-${var.environment}"
   location            = var.location
@@ -66,7 +61,6 @@ resource "azurerm_virtual_network" "virtualNetwork" {
 
 # Subnets
 resource "azurerm_subnet" "subnetPrivateEndpoint" {
-  provider                                  = azurerm.subscription
   depends_on                                = [azurerm_virtual_network.virtualNetwork, azurerm_route_table.routeTable, azurerm_network_security_group.networkSecurityGroup]
   name                                      = "snet-${var.subscriptionName}-privateendpoint-${var.environment}"
   resource_group_name                       = azurerm_resource_group.resourceGroupNetwork.name
@@ -76,7 +70,6 @@ resource "azurerm_subnet" "subnetPrivateEndpoint" {
 }
 
 resource "azurerm_subnet" "subnetService" {
-  provider             = azurerm.subscription
   depends_on           = [azurerm_virtual_network.virtualNetwork, azurerm_route_table.routeTable, azurerm_network_security_group.networkSecurityGroup]
   name                 = "snet-${var.subscriptionName}-sql-${var.environment}"
   resource_group_name  = azurerm_resource_group.resourceGroupNetwork.name
@@ -86,14 +79,12 @@ resource "azurerm_subnet" "subnetService" {
 
 # Subnet & Network Security Group Associations
 resource "azurerm_subnet_network_security_group_association" "subnetPrivateEndpointNetworkSecurityGroupAssociation" {
-  provider                  = azurerm.subscription
   depends_on                = [azurerm_subnet.subnetPrivateEndpoint, azurerm_network_security_group.networkSecurityGroup]
   subnet_id                 = azurerm_subnet.subnetPrivateEndpoint.id
   network_security_group_id = azurerm_network_security_group.networkSecurityGroup.id
 }
 
 resource "azurerm_subnet_network_security_group_association" "subnetServiceNetworkSecurityGroupAssociation" {
-  provider                  = azurerm.subscription
   depends_on                = [azurerm_subnet.subnetService, azurerm_network_security_group.networkSecurityGroup]
   subnet_id                 = azurerm_subnet.subnetService.id
   network_security_group_id = azurerm_network_security_group.networkSecurityGroup.id
@@ -101,14 +92,12 @@ resource "azurerm_subnet_network_security_group_association" "subnetServiceNetwo
 
 # Subnet & Route Table Associations
 resource "azurerm_subnet_route_table_association" "subnetPrivateEndpointRouteTableAssociation" {
-  provider       = azurerm.subscription
   depends_on     = [azurerm_subnet.subnetPrivateEndpoint, azurerm_route_table.routeTable]
   subnet_id      = azurerm_subnet.subnetPrivateEndpoint.id
   route_table_id = azurerm_route_table.routeTable.id
 }
 
 resource "azurerm_subnet_route_table_association" "subnetServiceRouteTableAssociation" {
-  provider       = azurerm.subscription
   depends_on     = [azurerm_subnet.subnetService, azurerm_route_table.routeTable]
   subnet_id      = azurerm_subnet.subnetService.id
   route_table_id = azurerm_route_table.routeTable.id
@@ -116,7 +105,6 @@ resource "azurerm_subnet_route_table_association" "subnetServiceRouteTableAssoci
 
 # Private Endpoint
 resource "azapi_resource" "privateEndpoint" {
-  provider   = azapi.subscription
   depends_on = [azurerm_mssql_server.sqlServer]
   tags       = var.tagsNetwork
   name       = "${azurerm_mssql_server.sqlServer.name}-pe"
@@ -157,7 +145,6 @@ resource "azapi_resource" "privateEndpoint" {
 
 # RG Service
 resource "azurerm_resource_group" "resourceGroupService" {
-  provider = azurerm.subscription
   tags     = var.tagsService
   name     = "rg-${var.subscriptionName}-sql-${var.region}-${var.environment}"
   location = var.location
@@ -165,7 +152,6 @@ resource "azurerm_resource_group" "resourceGroupService" {
 
 # SQL Server
 resource "azurerm_mssql_server" "sqlServer" {
-  provider                      = azurerm.subscription
   tags                          = var.tagsService
   name                          = "sql-itdat-${var.region}-${var.environment}"
   location                      = var.location
@@ -190,7 +176,6 @@ resource "azurerm_mssql_server" "sqlServer" {
 
 # SQL Database
 resource "azurerm_mssql_database" "sqlDatabase" {
-  provider             = azurerm.subscription
   depends_on           = [azurerm_mssql_server.sqlServer]
   tags                 = var.tagsService
   name                 = "sqldb-itdat-${var.region}-${var.environment}"
@@ -215,75 +200,9 @@ resource "azurerm_mssql_database" "sqlDatabase" {
 }
 
 resource "azurerm_mssql_database" "sqlDatabase02" {
-  provider             = azurerm.subscription
   depends_on           = [azurerm_mssql_server.sqlServer]
   tags                 = var.tagsService
   name                 = "dbmaintenance"
   server_id            = azurerm_mssql_server.sqlServer.id
   collation            = "SQL_LATIN1_GENERAL_CP1_CI_AS"
-}
-
-# RG Monitoring
-resource "azurerm_resource_group" "resourceGroupMonitoring" {
-  provider = azurerm.subscription
-  tags     = var.tagsService
-  name     = "rg-${var.subscriptionName}-monitoring-${var.region}-${var.environment}"
-  location = var.location
-}
-
-# Action Group
-resource "azurerm_monitor_action_group" "actionGroup" {
-  provider            = azurerm.subscription
-  tags                = var.tagsService
-  name                = "ag-mg-landingzone-database"
-  resource_group_name = azurerm_resource_group.resourceGroupMonitoring.name
-  short_name          = "ag-database"
-
-  email_receiver {
-    name                    = "Database Administrator"
-    email_address           = "dba09@gw-world.com"
-    use_common_alert_schema = true
-  }
-}
-
-# ServiceHealth Alert
-resource "azurerm_monitor_activity_log_alert" "serviceHealthAlert" {
-  provider            = azurerm.subscription
-  tags                = var.tagsService
-  depends_on          = [azurerm_monitor_action_group.actionGroup]
-  name                = "alert-service-health-subscription"
-  resource_group_name = azurerm_resource_group.resourceGroupMonitoring.name
-  scopes              = [data.azurerm_subscription.subscription.id]
-
- action {
-    action_group_id = azurerm_monitor_action_group.actionGroup.id
-  }
-
-  criteria {
-    category = "ServiceHealth"
-
-    service_health {
-      locations = ["West Europe"]
-      services  = ["SQL Database", "SQL Managed Instance"]
-    }
-  }
-}
-
-# ResourceHealth Alert
-resource "azurerm_monitor_activity_log_alert" "resourceHealthAlert" {
-  provider            = azurerm.subscription
-  tags                = var.tagsService
-  depends_on          = [azurerm_monitor_action_group.actionGroup]
-  name                = "alert-resource-health-subscription"
-  resource_group_name = azurerm_resource_group.resourceGroupMonitoring.name
-  scopes              = [data.azurerm_subscription.subscription.id]
-
- action {
-    action_group_id = azurerm_monitor_action_group.actionGroup.id
-  }
-
-  criteria {
-    category      = "ResourceHealth"
-    resource_type = "SQL database"
-  }
 }
