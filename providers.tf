@@ -18,3 +18,12 @@ terraform {
     }
   }
 }
+
+# Configure 'AzureRM' provider and subscriptions
+provider "azurerm" {
+  features {}
+}
+
+# Configure 'AzAPI' provider and subscriptions
+provider "azapi" {
+}
