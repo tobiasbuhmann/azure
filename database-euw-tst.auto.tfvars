@@ -1,6 +1,6 @@
 location = "westeurope"
 subscriptionName = "database"
-subscriptionId = "ea4943ca-3f1f-4a8c-acbe-6ee76843df3a"
+subscriptionId = "cdf33668-8756-4368-833e-76f7cf7a525f"
 region = "euw"
 environment = "tst"
 vnetAddressSpace = "10.136.16.0/24"
