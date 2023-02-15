@@ -1,5 +1,14 @@
 # Specify the version of the providers to use
 terraform {
+  cloud {
+    organization = "tobias-buhmann"
+    hostname = "app.terraform.io"
+
+    workspaces {
+      name = "azure"
+    }
+  }
+  
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
