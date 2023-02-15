@@ -1,8 +1,3 @@
-# Subscription
-data azurerm_subscription "subscription" {
-  subscription_id = "${var.subscriptionId}"
-}
-
 # RG Network
 resource "azurerm_resource_group" "resourceGroupNetwork" {
   tags     = var.tagsNetwork
@@ -33,20 +28,6 @@ resource "azurerm_route_table" "routeTable" {
   location                      = var.location
   resource_group_name           = azurerm_resource_group.resourceGroupNetwork.name
   disable_bgp_route_propagation = true
-
-  route {
-    name                   = "udr-default"
-    address_prefix         = "0.0.0.0/0"
-    next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = "10.136.254.68"
-  }
-
-  route {
-    name                   = "udr-vnet-connectivity-euw-prd-001"
-    address_prefix         = "10.136.254.0/24"
-    next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = "10.136.254.68"
-  }
 }
 
 # Virtual Network
@@ -141,68 +122,4 @@ resource "azapi_resource" "privateEndpoint" {
       }
     }
   })
-}
-
-# RG Service
-resource "azurerm_resource_group" "resourceGroupService" {
-  tags     = var.tagsService
-  name     = "rg-${var.subscriptionName}-sql-${var.region}-${var.environment}"
-  location = var.location
-}
-
-# SQL Server
-resource "azurerm_mssql_server" "sqlServer" {
-  tags                          = var.tagsService
-  name                          = "sql-itdat-${var.region}-${var.environment}"
-  location                      = var.location
-  resource_group_name           = azurerm_resource_group.resourceGroupService.name
-  version                       = "12.0"
-  administrator_login           = "${var.admin}"
-  administrator_login_password  = "${var.adminPassword}"
-  minimum_tls_version           = "1.2"
-  connection_policy             = "Default"
-  public_network_access_enabled = false
-
-  azuread_administrator {
-    login_username              = "O_AZURE_DATABASE_OPERATOR-AZ"
-    object_id                   = "29ff9cd0-891f-45de-9c95-522ef28771c9"
-    azuread_authentication_only = false
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
-}
-
-# SQL Database
-resource "azurerm_mssql_database" "sqlDatabase" {
-  depends_on           = [azurerm_mssql_server.sqlServer]
-  tags                 = var.tagsService
-  name                 = "sqldb-itdat-${var.region}-${var.environment}"
-  server_id            = azurerm_mssql_server.sqlServer.id
-  collation            = "SQL_LATIN1_GENERAL_CP1_CI_AS"
-  create_mode          = "Default"
-  license_type         = "BasePrice"
-  max_size_gb          = 20
-  read_scale           = false
-  sku_name             = "S1"
-  zone_redundant       = false
-  storage_account_type = "Zone"
-
-  threat_detection_policy {
-    state = "Disabled"
-  }
-
-  short_term_retention_policy { 
-    retention_days           = 7
-    backup_interval_in_hours = 24
-  }
-}
-
-resource "azurerm_mssql_database" "sqlDatabase02" {
-  depends_on           = [azurerm_mssql_server.sqlServer]
-  tags                 = var.tagsService
-  name                 = "dbmaintenance"
-  server_id            = azurerm_mssql_server.sqlServer.id
-  collation            = "SQL_LATIN1_GENERAL_CP1_CI_AS"
 }

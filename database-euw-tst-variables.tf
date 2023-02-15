@@ -6,10 +6,6 @@ variable subscriptionName {
     type = string
 }
 
-variable subscriptionId {
-    type = string
-}
-
 variable region {
     type = string
 }
@@ -35,18 +31,5 @@ variable privateEndpointIpAddress {
 }
 
 variable tagsNetwork {
-    type = map(string)
-}
-
-variable admin {
-    type = string
-}
-
-variable adminPassword {
-    type      = string
-    sensitive = true
-}
-
-variable tagsService {
     type = map(string)
 }
