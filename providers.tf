@@ -1,14 +1,5 @@
-# Specify the providers to use
+# Providers specification
 terraform {
-  cloud {
-    organization = "tobias-buhmann"
-    hostname = "app.terraform.io"
-
-    workspaces {
-      name = "azure-vcs"
-    }
-  }
-
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -16,14 +7,17 @@ terraform {
     azapi = {
       source = "Azure/azapi"
     }
+    spacelift = {
+      source = "spacelift-io/spacelift"
+    }
   }
 }
 
-# Configure 'AzureRM' provider and subscriptions
+# Providers configuration
 provider "azurerm" {
   features {}
 }
 
-# Configure 'AzAPI' provider and subscriptions
-provider "azapi" {
-}
+provider "azapi" {}
+
+provider "spacelift" {}
