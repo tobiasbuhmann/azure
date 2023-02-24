@@ -134,7 +134,7 @@ resource "azurerm_resource_group" "resourceGroupService" {
 # SQL Server
 resource "azurerm_mssql_server" "sqlServer" {
   tags                          = var.tagsService
-  name                          = "sql-itdat-${var.region}-${var.environment}"
+  name                          = "sql-tbu09-${var.region}-${var.environment}"
   location                      = var.location
   resource_group_name           = azurerm_resource_group.resourceGroupService.name
   version                       = "12.0"
@@ -159,7 +159,7 @@ resource "azurerm_mssql_server" "sqlServer" {
 resource "azurerm_mssql_database" "sqlDatabase" {
   depends_on           = [azurerm_mssql_server.sqlServer]
   tags                 = var.tagsService
-  name                 = "sqldb-itdat-${var.region}-${var.environment}"
+  name                 = "sqldb-tbu09-${var.region}-${var.environment}"
   server_id            = azurerm_mssql_server.sqlServer.id
   collation            = "SQL_LATIN1_GENERAL_CP1_CI_AS"
   create_mode          = "Default"
