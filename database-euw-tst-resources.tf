@@ -86,7 +86,6 @@ resource "azurerm_subnet_route_table_association" "subnetServiceRouteTableAssoci
 
 # Private Endpoint
 resource "azapi_resource" "privateEndpoint" {
-  provider   = azapi.database-tst-001
   depends_on = [azurerm_mssql_server.sqlServer]
   tags       = var.tagsNetwork
   name       = "${azurerm_mssql_server.sqlServer.name}-pe"
@@ -127,7 +126,6 @@ resource "azapi_resource" "privateEndpoint" {
 
 # RG Service
 resource "azurerm_resource_group" "resourceGroupService" {
-  provider = azurerm.database-tst-001
   tags     = var.tagsService
   name     = "rg-${var.subscriptionName}-sql-${var.region}-${var.environment}"
   location = var.location
@@ -135,7 +133,6 @@ resource "azurerm_resource_group" "resourceGroupService" {
 
 # SQL Server
 resource "azurerm_mssql_server" "sqlServer" {
-  provider                      = azurerm.database-tst-001
   tags                          = var.tagsService
   name                          = "sql-itdat-${var.region}-${var.environment}"
   location                      = var.location
@@ -160,7 +157,6 @@ resource "azurerm_mssql_server" "sqlServer" {
 
 # SQL Database
 resource "azurerm_mssql_database" "sqlDatabase" {
-  provider             = azurerm.database-tst-001
   depends_on           = [azurerm_mssql_server.sqlServer]
   tags                 = var.tagsService
   name                 = "sqldb-itdat-${var.region}-${var.environment}"
