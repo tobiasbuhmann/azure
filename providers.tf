@@ -1,14 +1,18 @@
 # Providers specification
 terraform {
+  cloud {
+    organization = "tobias-buhmann"
+    workspaces {
+      name = "azure-vcs"
+    }
+  }
+
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
+      source = "hashicorp/azurerm"
     }
     azapi = {
       source = "Azure/azapi"
-    }
-    spacelift = {
-      source = "spacelift-io/spacelift"
     }
   }
 }
@@ -19,5 +23,3 @@ provider "azurerm" {
 }
 
 provider "azapi" {}
-
-provider "spacelift" {}

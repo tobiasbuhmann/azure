@@ -11,3 +11,10 @@ tagsNetwork = {
     TechTeam                 = "IT-SyNW"
     OpsTeam                  = "IT-SyNW"
 }
+admin = "sqldatadmin"
+adminPassword = "P+Nmb#WpM3jG"
+tagsService = {
+	WorkloadName             = "SQL Server"
+    TechTeam                 = "IT-DAT"
+    OpsTeam                  = "IT-DAT"
+}
